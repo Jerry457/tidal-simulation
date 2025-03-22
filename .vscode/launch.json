@@ -1,0 +1,38 @@
+{
+    // 使用 IntelliSense 了解相关属性。
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug",
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceFolder}/src",
+            "preLaunchTask": "dev"
+        },
+        {
+            "request": "launch",
+            "name": "DebugServer",
+            "type": "node",
+            "program": "${workspaceFolder}/server/index.ts",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "runtimeExecutable": "C:\\Users\\22348\\.deno\\bin\\deno.EXE",
+            "runtimeArgs": ["run", "--inspect-wait", "--allow-all", "--unstable-sloppy-imports"],
+            "attachSimplePort": 9229
+        },
+        {
+            "request": "launch",
+            "name": "GetDate",
+            "type": "node",
+            "program": "${workspaceFolder}/server/getDate.ts",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "runtimeExecutable": "C:\\Users\\22348\\.deno\\bin\\deno.EXE",
+            "runtimeArgs": ["run", "--inspect-wait", "--allow-all", "--unstable-sloppy-imports"],
+            "attachSimplePort": 9229
+        }
+    ]
+}
