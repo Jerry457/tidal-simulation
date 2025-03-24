@@ -103,6 +103,10 @@ function Flood({ x, y, color }: { x: number; y: number; color?: string }) {
     )
 }
 
+function isFlood(x: number, y: number) {
+    return floodMap[x] && floodMap[x][y] && floodMap[x][y].dataset.flooded === "true"
+}
+
 function OnFlood(flood: HTMLElement, level: number) {
     if (flood.dataset.flooded === "true") return
     flood.dataset.flooded = "true"
@@ -124,96 +128,112 @@ function clearFlood() {
 }
 
 function onFloodRender() {
-    for (let x = 0; x < floodMap.length; x++) {
-        for (let y = 0; y < floodMap.length; y++) {
-            let leftIsOcean = false
-            let rightIsOcean = false
-            let topIsOcean = false
-            let bottomIsOcean = false
-            if (isLandTile(x, y)) {
-                const leftX = x - 1
-                const rightX = x + 1
-                const topY = y - 1
-                const bottomY = y + 1
-                leftIsOcean = isOceanTile(leftX, y)
-                rightIsOcean = isOceanTile(rightX, y)
-                topIsOcean = isOceanTile(x, topY)
-                bottomIsOcean = isOceanTile(x, bottomY)
-                const _level = Math.max(level(), 0)
-                for (let i = 1; i < _level; i++) {
-                    const offset = Math.floor((i - 1) / 2)
-                    if (leftIsOcean && isLandTile(x + offset, y)) {
-                        const floodLeft = x * 2 + i - 1
-                        const leftTopFlood = floodMap[floodLeft]?.[y * 2]
-                        const leftBottomFlood = floodMap[floodLeft]?.[y * 2 + 1]
-                        if (leftTopFlood) OnFlood(leftTopFlood, i)
-                        if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+    const _level = Math.max(level(), 0)
+
+    for (let i = 1; i < _level; i++) {
+        for (let x = 0; x < map.length; x++) {
+            for (let y = 0; y < map.length; y++) {
+                if (isLandTile(x, y)) {
+                    const leftX = x - 1
+                    const rightX = x + 1
+                    const topY = y - 1
+                    const bottomY = y + 1
+                    const leftIsOcean = isOceanTile(leftX, y)
+                    const rightIsOcean = isOceanTile(rightX, y)
+                    const topIsOcean = isOceanTile(x, topY)
+                    const bottomIsOcean = isOceanTile(x, bottomY)
+                    const leftTopIsOcean = isOceanTile(leftX, topY)
+                    const leftBottomIsOcean = isOceanTile(leftX, bottomY)
+                    const rightTopIsOcean = isOceanTile(rightX, topY)
+                    const rightBottomIsOcean = isOceanTile(rightX, bottomY)
+                    const leftFloodX = x * 2
+                    const rightFloodX = leftFloodX + 1
+                    const topFloodY = y * 2
+                    const bottomFloodY = topFloodY + 1
+                    if (leftIsOcean) {
+                        const _leftFloodX = x * 2 + i - 1
+                        const leftFloodTileX = Math.floor(_leftFloodX / 2)
+                        if (isLandTile(leftFloodTileX, y)) {
+                            const leftTopFlood = floodMap[_leftFloodX]?.[topFloodY]
+                            const leftBottomFlood = floodMap[_leftFloodX]?.[bottomFloodY]
+                            if (leftTopFlood) OnFlood(leftTopFlood, i)
+                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                        }
                     }
-                    if (rightIsOcean && isLandTile(x - offset, y)) {
-                        const floodRight = x * 2 - i + 2
-                        const rightTopFlood = floodMap[floodRight]?.[y * 2]
-                        const rightBottomFlood = floodMap[floodRight]?.[y * 2 + 1]
-                        if (rightTopFlood) OnFlood(rightTopFlood, i)
-                        if (rightBottomFlood) OnFlood(rightBottomFlood, i)
+                    if (rightIsOcean) {
+                        const _rightFloodX = x * 2 - i + 2
+                        const rightFloodTileX = Math.floor(_rightFloodX / 2)
+                        if (isLandTile(rightFloodTileX, y)) {
+                            const leftTopFlood = floodMap[_rightFloodX]?.[topFloodY]
+                            const leftBottomFlood = floodMap[_rightFloodX]?.[bottomFloodY]
+                            if (leftTopFlood) OnFlood(leftTopFlood, i)
+                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                        }
                     }
-                    if (topIsOcean && isLandTile(x, y + offset)) {
-                        const floodTop = y * 2 + i - 1
-                        const topLeftFlood = floodMap[x * 2]?.[floodTop]
-                        const topRightFlood = floodMap[x * 2 + 1]?.[floodTop]
-                        if (topLeftFlood) OnFlood(topLeftFlood, i)
-                        if (topRightFlood) OnFlood(topRightFlood, i)
+                    if (topIsOcean) {
+                        const _topFloodY = y * 2 + i - 1
+                        const topFloodTileY = Math.floor(_topFloodY / 2)
+                        if (isLandTile(x, topFloodTileY)) {
+                            const leftTopFlood = floodMap[leftFloodX]?.[_topFloodY]
+                            const rightTopFlood = floodMap[rightFloodX]?.[_topFloodY]
+                            if (leftTopFlood) OnFlood(leftTopFlood, i)
+                            if (rightTopFlood) OnFlood(rightTopFlood, i)
+                        }
                     }
-                    if (bottomIsOcean && isLandTile(x, y - offset)) {
-                        const floodBottom = y * 2 - i + 2
-                        const topLeftFlood = floodMap[x * 2]?.[floodBottom]
-                        const topRightFlood = floodMap[x * 2 + 1]?.[floodBottom]
-                        if (topLeftFlood) OnFlood(topLeftFlood, i)
-                        if (topRightFlood) OnFlood(topRightFlood, i)
+                    if (bottomIsOcean) {
+                        const _bottomFloodY = y * 2 - i + 2
+                        const bottomFloodTileY = Math.floor(_bottomFloodY / 2)
+                        if (isLandTile(x, bottomFloodTileY)) {
+                            const leftBottomFlood = floodMap[leftFloodX]?.[_bottomFloodY]
+                            const rightBottomFlood = floodMap[rightFloodX]?.[_bottomFloodY]
+                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                            if (rightBottomFlood) OnFlood(rightBottomFlood, i)
+                        }
                     }
 
                     for (let k = 1; k < i; k++) {
-                        const floodLeft = x * 2 + k - 1
-                        const floodBottom = y * 2 + 2 - i + k
-                        if (
-                            !leftIsOcean &&
-                            !bottomIsOcean &&
-                            isOceanTile(leftX, bottomY) &&
-                            isLandTile(Math.floor(floodLeft / 2), Math.floor(floodBottom / 2))
-                        ) {
-                            const leftBottomFlood = floodMap[floodLeft]?.[floodBottom]
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                        if (!leftIsOcean && !bottomIsOcean && isOceanTile(leftX, bottomY)) {
+                            const floodX = x * 2 + k - 1
+                            const floodY = y * 2 + 2 - i + k
+                            const floodTileX = Math.floor(floodX / 2)
+                            const floodTileY = Math.floor(floodY / 2)
+                            if (isLandTile(floodTileX, floodTileY)) {
+                                const leftBottomFlood = floodMap[floodX]?.[floodY]
+                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                            }
                         }
 
-                        const floodTop = y * 2 + i - k - 1
-                        if (
-                            !leftIsOcean &&
-                            !topIsOcean &&
-                            isOceanTile(leftX, topY) &&
-                            isLandTile(Math.floor(floodLeft / 2), Math.floor(floodTop / 2))
-                        ) {
-                            const leftBottomFlood = floodMap[floodLeft]?.[floodTop]
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                        if (!leftIsOcean && !topIsOcean && isOceanTile(leftX, topY)) {
+                            const floodX = x * 2 + k - 1
+                            const floodY = y * 2 + i - k - 1
+                            const floodTileX = Math.floor(floodX / 2)
+                            const floodTileY = Math.floor(floodY / 2)
+                            if (isLandTile(floodTileX, floodTileY)) {
+                                const leftBottomFlood = floodMap[floodX]?.[floodY]
+                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                            }
                         }
 
-                        const floodRihgt = x * 2 - (k - 1) + 1
-                        if (
-                            !rightIsOcean &&
-                            !bottomIsOcean &&
-                            isOceanTile(rightX, bottomY) &&
-                            isLandTile(Math.floor(floodRihgt / 2), Math.floor(floodBottom / 2))
-                        ) {
-                            const leftBottomFlood = floodMap[floodRihgt]?.[floodBottom]
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                        if (!rightIsOcean && !bottomIsOcean && isOceanTile(rightX, bottomY)) {
+                            const floodX = x * 2 - k + 2
+                            const floodY = y * 2 + 2 - i + k
+                            const floodTileX = Math.floor(floodX / 2)
+                            const floodTileY = Math.floor(floodY / 2)
+                            if (isLandTile(floodTileX, floodTileY)) {
+                                const leftBottomFlood = floodMap[floodX]?.[floodY]
+                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                            }
                         }
 
-                        if (
-                            !rightIsOcean &&
-                            !topIsOcean &&
-                            isOceanTile(rightX, topY) &&
-                            isLandTile(Math.floor(floodRihgt / 2), Math.floor(floodTop / 2))
-                        ) {
-                            const leftBottomFlood = floodMap[floodRihgt]?.[floodTop]
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                        if (!rightIsOcean && !topIsOcean && isOceanTile(rightX, topY)) {
+                            const floodX = x * 2 - k + 2
+                            const floodY = y * 2 + i - k - 1
+                            const floodTileX = Math.floor(floodX / 2)
+                            const floodTileY = Math.floor(floodY / 2)
+                            if (isLandTile(floodTileX, floodTileY)) {
+                                const leftBottomFlood = floodMap[floodX]?.[floodY]
+                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
+                            }
                         }
                     }
                 }
