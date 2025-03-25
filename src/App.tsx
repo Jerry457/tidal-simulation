@@ -6,6 +6,7 @@ type Map<t> = t[][]
 const TielColor = {
     OceanTile: "Cyan",
     LandTile: "Cornsilk",
+    BlockTile: "Black",
 }
 
 const map: Map<number> = [
@@ -14,20 +15,20 @@ const map: Map<number> = [
     [1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1],
-    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1],
+    [1, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1],
+    [1, 1, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1],
+    [0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1],
+    [0, 0, 0, 3, 3, 3, 0, 3, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1],
     [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 3, 3, 3, 3, 0],
+    [1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 3, 0, 0, 3, 0],
+    [1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 3, 3, 3, 3, 0],
     [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
 ]
 const floodMap: Map<HTMLElement | null> = []
@@ -55,7 +56,8 @@ function isOceanTile(x: number, y: number) {
 }
 
 function Tile({ tile, x, y }: { tile: number; x: number; y: number }) {
-    const color = (isLandTile(x, y) && TielColor.LandTile) || TielColor.OceanTile
+    const color =
+        (isLandTile(x, y) && TielColor.LandTile) || (isOceanTile(x, y) && TielColor.OceanTile) || TielColor.BlockTile
     const left = x * tileSize
     const top = y * tileSize
     return (
@@ -103,17 +105,86 @@ function Flood({ x, y, color }: { x: number; y: number; color?: string }) {
     )
 }
 
+function floodCoordsToTileCoords(x: number, y: number) {
+    return {
+        x: Math.floor(x / 2),
+        y: Math.floor(y / 2),
+    }
+}
+
 function isFlood(x: number, y: number) {
-    return floodMap[x] && floodMap[x][y] && floodMap[x][y].dataset.flooded === "true"
+    return floodMap[x] && floodMap[x][y] && floodMap[x][y].dataset.type !== undefined
+}
+
+function isFloodSource(x: number, y: number, level: number) {
+    const { x: tileX, y: tileY } = floodCoordsToTileCoords(x, y)
+    if (level <= 0) return isOceanTile(tileX, tileY)
+    else return isFlood(x, y) && floodMap[x][y]?.dataset.type === level.toString()
+}
+
+function blockFlood(flood: HTMLElement) {
+    flood.dataset.type = "block"
+    flood.style.textAlign = "center"
+    flood.style.backgroundColor = "red"
+    flood.style.opacity = "0.5"
 }
 
 function OnFlood(flood: HTMLElement, level: number) {
-    if (flood.dataset.flooded === "true") return
-    flood.dataset.flooded = "true"
+    if (flood.dataset.type !== "undefined") return
+    flood.dataset.type = level.toString()
     flood.textContent = level.toString()
     flood.style.textAlign = "center"
     flood.style.backgroundColor = "green"
     flood.style.opacity = "0.5"
+}
+
+function placeblockFlood() {
+    blockFlood(floodMap[7][4]!)
+    blockFlood(floodMap[7][5]!)
+    blockFlood(floodMap[7][6]!)
+    blockFlood(floodMap[7][7]!)
+    blockFlood(floodMap[6][7]!)
+    blockFlood(floodMap[8][4]!)
+    blockFlood(floodMap[9][4]!)
+
+    blockFlood(floodMap[12][4]!)
+    blockFlood(floodMap[12][5]!)
+    blockFlood(floodMap[12][6]!)
+    blockFlood(floodMap[12][7]!)
+    blockFlood(floodMap[13][4]!)
+    blockFlood(floodMap[14][4]!)
+    blockFlood(floodMap[14][5]!)
+    blockFlood(floodMap[14][6]!)
+    blockFlood(floodMap[14][7]!)
+    blockFlood(floodMap[13][7]!)
+
+    blockFlood(floodMap[31][7]!)
+    blockFlood(floodMap[32][7]!)
+    blockFlood(floodMap[30][7]!)
+    blockFlood(floodMap[30][8]!)
+    blockFlood(floodMap[30][9]!)
+    blockFlood(floodMap[30][10]!)
+    blockFlood(floodMap[30][11]!)
+    blockFlood(floodMap[30][12]!)
+    blockFlood(floodMap[30][13]!)
+    blockFlood(floodMap[30][14]!)
+    blockFlood(floodMap[30][15]!)
+    blockFlood(floodMap[30][16]!)
+    blockFlood(floodMap[30][17]!)
+    blockFlood(floodMap[30][18]!)
+    blockFlood(floodMap[30][19]!)
+    blockFlood(floodMap[30][7]!)
+    blockFlood(floodMap[32][8]!)
+    blockFlood(floodMap[32][9]!)
+    blockFlood(floodMap[32][10]!)
+    blockFlood(floodMap[32][11]!)
+    blockFlood(floodMap[32][12]!)
+    blockFlood(floodMap[32][13]!)
+    blockFlood(floodMap[32][14]!)
+    blockFlood(floodMap[32][15]!)
+    blockFlood(floodMap[32][16]!)
+    blockFlood(floodMap[32][17]!)
+    blockFlood(floodMap[31][17]!)
 }
 
 function clearFlood() {
@@ -122,7 +193,7 @@ function clearFlood() {
             floodMap[y][x]!.textContent = ""
             floodMap[y][x]!.style.backgroundColor = ""
             floodMap[y][x]!.style.opacity = "1"
-            floodMap[y][x]!.dataset.flooded = undefined
+            floodMap[y][x]!.dataset.type = "undefined"
         }
     }
 }
@@ -130,110 +201,23 @@ function clearFlood() {
 function onFloodRender() {
     const _level = Math.max(level(), 0)
 
-    for (let i = 1; i < _level; i++) {
-        for (let x = 0; x < map.length; x++) {
-            for (let y = 0; y < map.length; y++) {
-                if (isLandTile(x, y)) {
-                    const leftX = x - 1
-                    const rightX = x + 1
-                    const topY = y - 1
-                    const bottomY = y + 1
-                    const leftIsOcean = isOceanTile(leftX, y)
-                    const rightIsOcean = isOceanTile(rightX, y)
-                    const topIsOcean = isOceanTile(x, topY)
-                    const bottomIsOcean = isOceanTile(x, bottomY)
-                    const leftTopIsOcean = isOceanTile(leftX, topY)
-                    const leftBottomIsOcean = isOceanTile(leftX, bottomY)
-                    const rightTopIsOcean = isOceanTile(rightX, topY)
-                    const rightBottomIsOcean = isOceanTile(rightX, bottomY)
-                    const leftFloodX = x * 2
-                    const rightFloodX = leftFloodX + 1
-                    const topFloodY = y * 2
-                    const bottomFloodY = topFloodY + 1
-                    if (leftIsOcean) {
-                        const _leftFloodX = x * 2 + i - 1
-                        const leftFloodTileX = Math.floor(_leftFloodX / 2)
-                        if (isLandTile(leftFloodTileX, y)) {
-                            const leftTopFlood = floodMap[_leftFloodX]?.[topFloodY]
-                            const leftBottomFlood = floodMap[_leftFloodX]?.[bottomFloodY]
-                            if (leftTopFlood) OnFlood(leftTopFlood, i)
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                        }
-                    }
-                    if (rightIsOcean) {
-                        const _rightFloodX = x * 2 - i + 2
-                        const rightFloodTileX = Math.floor(_rightFloodX / 2)
-                        if (isLandTile(rightFloodTileX, y)) {
-                            const leftTopFlood = floodMap[_rightFloodX]?.[topFloodY]
-                            const leftBottomFlood = floodMap[_rightFloodX]?.[bottomFloodY]
-                            if (leftTopFlood) OnFlood(leftTopFlood, i)
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                        }
-                    }
-                    if (topIsOcean) {
-                        const _topFloodY = y * 2 + i - 1
-                        const topFloodTileY = Math.floor(_topFloodY / 2)
-                        if (isLandTile(x, topFloodTileY)) {
-                            const leftTopFlood = floodMap[leftFloodX]?.[_topFloodY]
-                            const rightTopFlood = floodMap[rightFloodX]?.[_topFloodY]
-                            if (leftTopFlood) OnFlood(leftTopFlood, i)
-                            if (rightTopFlood) OnFlood(rightTopFlood, i)
-                        }
-                    }
-                    if (bottomIsOcean) {
-                        const _bottomFloodY = y * 2 - i + 2
-                        const bottomFloodTileY = Math.floor(_bottomFloodY / 2)
-                        if (isLandTile(x, bottomFloodTileY)) {
-                            const leftBottomFlood = floodMap[leftFloodX]?.[_bottomFloodY]
-                            const rightBottomFlood = floodMap[rightFloodX]?.[_bottomFloodY]
-                            if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                            if (rightBottomFlood) OnFlood(rightBottomFlood, i)
-                        }
-                    }
+    const SURROUNDING_OFFSETS = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 },
+    ]
 
-                    for (let k = 1; k < i; k++) {
-                        if (!leftIsOcean && !bottomIsOcean && isOceanTile(leftX, bottomY)) {
-                            const floodX = x * 2 + k - 1
-                            const floodY = y * 2 + 2 - i + k
-                            const floodTileX = Math.floor(floodX / 2)
-                            const floodTileY = Math.floor(floodY / 2)
-                            if (isLandTile(floodTileX, floodTileY)) {
-                                const leftBottomFlood = floodMap[floodX]?.[floodY]
-                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                            }
-                        }
-
-                        if (!leftIsOcean && !topIsOcean && isOceanTile(leftX, topY)) {
-                            const floodX = x * 2 + k - 1
-                            const floodY = y * 2 + i - k - 1
-                            const floodTileX = Math.floor(floodX / 2)
-                            const floodTileY = Math.floor(floodY / 2)
-                            if (isLandTile(floodTileX, floodTileY)) {
-                                const leftBottomFlood = floodMap[floodX]?.[floodY]
-                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                            }
-                        }
-
-                        if (!rightIsOcean && !bottomIsOcean && isOceanTile(rightX, bottomY)) {
-                            const floodX = x * 2 - k + 2
-                            const floodY = y * 2 + 2 - i + k
-                            const floodTileX = Math.floor(floodX / 2)
-                            const floodTileY = Math.floor(floodY / 2)
-                            if (isLandTile(floodTileX, floodTileY)) {
-                                const leftBottomFlood = floodMap[floodX]?.[floodY]
-                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                            }
-                        }
-
-                        if (!rightIsOcean && !topIsOcean && isOceanTile(rightX, topY)) {
-                            const floodX = x * 2 - k + 2
-                            const floodY = y * 2 + i - k - 1
-                            const floodTileX = Math.floor(floodX / 2)
-                            const floodTileY = Math.floor(floodY / 2)
-                            if (isLandTile(floodTileX, floodTileY)) {
-                                const leftBottomFlood = floodMap[floodX]?.[floodY]
-                                if (leftBottomFlood) OnFlood(leftBottomFlood, i)
-                            }
+    for (let i = 1; i <= _level; i++) {
+        for (let x = 0; x < floodMap.length; x++) {
+            for (let y = 0; y < floodMap.length; y++) {
+                if (isFloodSource(x, y, i - 1)) {
+                    for (const offset of SURROUNDING_OFFSETS) {
+                        const offsetX = x + offset.x
+                        const offsetY = y + offset.y
+                        const { x: tileX, y: tileY } = floodCoordsToTileCoords(offsetX, offsetY)
+                        if (isLandTile(tileX, tileY)) {
+                            OnFlood(floodMap[offsetX][offsetY]!, i)
                         }
                     }
                 }
@@ -250,6 +234,7 @@ function FloodMap() {
         level()
         if (renderedCount() === floodMap.length ** 2) {
             clearFlood()
+            placeblockFlood()
             onFloodRender()
         }
     })
